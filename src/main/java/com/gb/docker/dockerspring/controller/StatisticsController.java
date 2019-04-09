@@ -1,5 +1,6 @@
 package com.gb.docker.dockerspring.controller;
 
+import com.gb.docker.dockerspring.model.Statistics;
 import com.gb.docker.dockerspring.model.Transaction;
 import com.google.common.cache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,23 +22,23 @@ public class StatisticsController {
     public Cache<Integer, Transaction> transactionCache;
 
     @GetMapping
-    public ResponseEntity<DoubleSummaryStatistics> getTransactionStatistics() {
+    public ResponseEntity<Statistics> getTransactionStatistics() {
 
         //List<Transaction> transactions = transactionCache.asMap().entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
         //DoubleSummaryStatistics statistics = transactions.stream().collect(Collectors.summarizingDouble(Transaction::getAmount));
+        if (transactionCache.size() > 0) {
+            DoubleSummaryStatistics transactionStatistics = transactionCache.asMap().entrySet().
+                    stream().map(entry -> entry.getValue()).collect(Collectors.summarizingDouble(Transaction::getAmount));
 
-        DoubleSummaryStatistics transationStatistics = transactionCache.asMap().entrySet().
-                stream().map(entry -> entry.getValue()).collect(Collectors.summarizingDouble(Transaction::getAmount));
-
-        /*Statistics statistics = new Statistics();
-        statistics.setAvg(transationStatistics.getAverage());
-        statistics.setCount(transationStatistics.getCount());
-        statistics.setMax(transationStatistics.getMax());
-        statistics.setMin(transationStatistics.getMin());
-        statistics.setSum(transationStatistics.getSum());*/
-
-        return new ResponseEntity<>(transationStatistics, HttpStatus.OK);
+            Statistics statistics = new Statistics();
+            statistics.setAvg(transactionStatistics.getAverage());
+            statistics.setCount(transactionStatistics.getCount());
+            statistics.setMax(transactionStatistics.getMax());
+            statistics.setMin(transactionStatistics.getMin());
+            statistics.setSum(transactionStatistics.getSum());
+            return new ResponseEntity<>(statistics, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new Statistics(), HttpStatus.OK);
+        }
     }
-
-
 }

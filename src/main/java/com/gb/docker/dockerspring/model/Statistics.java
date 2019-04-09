@@ -2,49 +2,49 @@ package com.gb.docker.dockerspring.model;
 
 public class Statistics {
 
-    private Double sum;
-    private Double avg;
-    private Double max;
-    private Double min;
-    private Long count;
+    private double sum;
+    private double avg;
+    private double max;
+    private double min;
+    private long count;
 
-    public Double getSum() {
+    public double getSum() {
         return sum;
     }
 
-    public void setSum(Double sum) {
+    public void setSum(double sum) {
         this.sum = sum;
     }
 
-    public Double getAvg() {
+    public double getAvg() {
         return avg;
     }
 
-    public void setAvg(Double avg) {
+    public void setAvg(double avg) {
         this.avg = avg;
     }
 
-    public Double getMax() {
+    public double getMax() {
         return max;
     }
 
-    public void setMax(Double max) {
+    public void setMax(double max) {
         this.max = max;
     }
 
-    public Double getMin() {
+    public double getMin() {
         return min;
     }
 
-    public void setMin(Double min) {
+    public void setMin(double min) {
         this.min = min;
     }
 
-    public Long getCount() {
+    public long getCount() {
         return count;
     }
 
-    public void setCount(Long count) {
+    public void setCount(long count) {
         this.count = count;
     }
 }
