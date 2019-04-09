@@ -17,3 +17,6 @@ GET -> localhost:8080/statistics
 
 //will fetch statistics for the transaction done in 60seconds
 
+Swagger UI 
+
+http://localhost:8080/swagger-ui.html#/
