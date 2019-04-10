@@ -5,14 +5,11 @@ import com.google.common.cache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -27,15 +24,14 @@ public class TransactionController {
     private final AtomicInteger atomicInteger = new AtomicInteger();
 
     @PostMapping
-    public ResponseEntity transaction(@RequestBody Transaction transaction) throws InterruptedException {
-
-        Timestamp from = Timestamp.from(Instant.now());
-        long now = from.getTime();
-        long timeStampFromTransaction = transaction.getTimeStamp();
-        long diff = now - timeStampFromTransaction;
-        long second = (diff / 1000) % 60;
-        //long diff2 = now > timeStampFromTransaction ? now - timeStampFromTransaction : timeStampFromTransaction-now;
-        if (second < 60) {
+    public ResponseEntity transaction(@RequestBody Transaction transaction) {
+        int utcDayNow = LocalDateTime.now(ZoneId.of("UTC")).getDayOfWeek().getValue();
+        int utcHourNow = LocalDateTime.now(ZoneId.of("UTC")).getHour();
+        int utcMinuteNow = LocalDateTime.now(ZoneId.of("UTC")).getMinute();
+        int transactionDay = Instant.ofEpochMilli(transaction.getTimeStamp()).atZone(ZoneId.of("UTC")).getDayOfWeek().getValue();
+        int transactionHour = Instant.ofEpochMilli(transaction.getTimeStamp()).atZone(ZoneId.of("UTC")).getHour();
+        int transactionMinute = Instant.ofEpochMilli(transaction.getTimeStamp()).atZone(ZoneId.of("UTC")).getMinute();
+        if (transactionDay == utcDayNow && transactionHour == utcHourNow && utcMinuteNow == transactionMinute) {
             transactionCache.put(atomicInteger.getAndIncrement(), transaction);
             return new ResponseEntity(HttpStatus.CREATED);
         } else {
@@ -49,9 +45,3 @@ public class TransactionController {
     }
 }
 
-//long timeStampFromTransaction =  Timestamp.from(Instant.now()).getTime();
-/* long millis = diff % 1000;
-        long minute = (diff / (1000 * 60)) % 60;
-        long hour = (diff / (1000 * 60 * 60)) % 24;
-        String time = String.format("%02d:%02d:%02d.%d", hour, minute, second, millis);
-        System.out.println("time = " + time);*/
